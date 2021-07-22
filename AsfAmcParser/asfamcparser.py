@@ -2,6 +2,7 @@
 import logging
 from re import split
 import re
+from sys import float_repr_style
 
 # Each type class is responsible for parsing its own elements
 class Joint:
@@ -12,7 +13,6 @@ class Joint:
         self._axisOrder = []
         self._axis = {}
         self._dof = {}
-        self._values = {}
 
     @property
     def name(self):
@@ -114,23 +114,6 @@ class Joint:
                 self._dof[key] = limitsList
         else:
             logging.error("Number of limits must match degree of freedoms, check passing in list.")
-    
-    @property
-    def values(self):
-        return self._values
-
-    @values.setter
-    def values(self, values:str):
-        # check if dof is set
-        if self._dof == {}:
-            logging.error("dof needs to be set first.")
-            return
-        splitString = values.split("\t")[1:]
-        if len(splitString) == len(self._dof):
-            for string, key in zip(splitString,self._dof.keys()):
-                self._values[key] = float(string)
-        else:
-            logging.error("Number of values must match dofs, check string format.")
 
 class ASF:
     def __init__(self, name:str) -> None:
@@ -143,6 +126,10 @@ class ASF:
     @property
     def joints(self):
         return self._joints
+
+    @property
+    def getJointNames(self):
+        return [joint.name for joint in self._joints]
     
     @property
     def name(self):
@@ -188,8 +175,56 @@ class ASF:
         return None
 
 class AMC:
-    def __init__(self, string) -> None:
-        pass
+    def __init__(self) -> None:
+        self._frameCount = 0
+        self._frames = []
+        self._fps = 30
+        self._duration = 0
+
+    @property
+    def frames(self):
+        return self._frames
+    
+    @property
+    def frameCount(self):
+        return self._frameCount
+    
+    @property
+    def duration(self):
+        return self._duration
+    
+    @property
+    def fps(self):
+        return self._fps
+    
+    @fps.setter
+    def fps(self, value:int):
+        if value > 0:
+            self._fps = value
+        else:
+            logging.error("fps must be greater than 0.")
+
+    def AddFrame(self, values:list):
+        # format: ["NAME","VAL","VAL","VAL"]
+        frame = {}
+        for value in self._SplitJointLine(values):
+            frame[value[0]] = [float(x) for x in value[1:]]
+        self._frames.append(frame)
+        self._frameCount += 1
+        self._duration = self._fps * self._frameCount
+
+    def __getitem__(self, frame:int) -> list:
+        if frame >= 0 and frame < self._frameCount:
+            return self._frames[frame]
+        else:
+            logging.error("frame index out of bounds.")
+    
+    def _SplitJointLine(self, values:str):
+        # check if dof is set
+        listValues = []
+        for string in values:
+            listValues.append(string.split("\t"))
+        return listValues
 
 class Parser:
     def __init__(self, directory:str=None) -> None:
