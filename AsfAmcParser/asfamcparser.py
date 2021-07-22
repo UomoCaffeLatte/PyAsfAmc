@@ -131,6 +131,7 @@ class Joint:
                 self._values[key] = float(string)
         else:
             logging.error("Number of values must match dofs, check string format.")
+
 class ASF:
     def __init__(self, name:str) -> None:
         self._name = name
@@ -138,16 +139,73 @@ class ASF:
         self._docs = ""
         self._joints = []
         self._hierarchy = {}
-        
-class AMC:
-    pass
+    
+    @property
+    def joints(self):
+        return self._joints
+    
+    @property
+    def name(self):
+        return self._name
 
-class parser:
-    def __init__(self) -> None:
+    @property
+    def units(self):
+        return self._units
+
+    @property
+    def hierarchy(self):
+        return self._hierarchy
+    
+    @property
+    def docs(self):
+        return self._docs
+
+    @docs.setter
+    def docs(self, value:str):
+        self._docs = value
+
+    def AddJoint(self, joint:Joint):
+        self._joints.append(joint)
+    
+    def AddMassUnit(self, unit:str):
+        self._units["mass"] = unit
+
+    def AddLengthUnit(self, unit:str):
+        self._units["length"] = unit
+
+    def AddAngleUnit(self, unit:str):
+        self._units["angle"] = unit
+    
+    def AddJointHierarchy(self, parentJointName:str, hierarchyRaw:str):
+        # format: \tName\tName etc
+        stringSplit = hierarchyRaw.split("\t")[1:]
+        self._hierarchy[parentJointName] = stringSplit
+
+    def __getitem__(self, jointName:str) -> Joint:
+        for j in self._joints:
+            if j.name == jointName: return j
+        logging.error(f"{jointName} joint does not exists.")
+        return None
+
+class AMC:
+    def __init__(self, string) -> None:
         pass
+
+class Parser:
+    def __init__(self, directory:str=None) -> None:
+        self._directory = directory
+        self._asf = None
+        self._amc = None
+        self._joints = []
 
     def asf(self, fileName:str):
-        pass
+        # Read file
+        with open(f"{self._directory}{fileName}") as asfFile:
+            lines = asfFile.read().splitlines()
+        
 
-    def amc(self, filename:str):
+    def amc(self, fileName:str):
+         # Read file
+        with open(f"{self._directory}{fileName}") as amcFile:
+            lines = amcFile.read().splitlines()
         pass

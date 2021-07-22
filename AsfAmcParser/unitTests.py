@@ -1,9 +1,15 @@
 import unittest
 from unittest.main import main
-from asfamcparser import Joint
+from asfamcparser import Joint, AMC, ASF, Parser
 from math import inf
 
 class ASFUnitTests(unittest.TestCase):
+    pass
+
+class AMCUnitTests(unittest.TestCase):
+    pass
+
+class ParserUnitTests(unittest.TestCase):
     pass
 
 class JointUnitTests(unittest.TestCase):
