@@ -3,7 +3,10 @@ from unittest.main import main
 from asfamcparser import Joint
 from math import inf
 
-class unitTests(unittest.TestCase):
+class ASFUnitTests(unittest.TestCase):
+    pass
+
+class JointUnitTests(unittest.TestCase):
     
     def test_nameGetter(self):
         testJoint = Joint("Test")
@@ -47,6 +50,11 @@ class unitTests(unittest.TestCase):
         testJoint.limits = ["(-inf\tinf)","(-inf\tinf)","(-inf\tinf)"]
         self.assertDictEqual(testJoint.limits, {"rx":[-inf,inf],"ry":[-inf,inf],"rz":[-inf,inf]})
 
+    def test_valuesSetter(self):
+        testJoint = Joint("Test")
+        testJoint._dof = {"rx":None, "ry":None, "rz":None}
+        testJoint.values = "\t5.6\t7.8\t9.0"
+        self.assertDictEqual(testJoint.values, {"rx":5.6, "ry":7.8, "rz":9.0})
 
 if __name__ == "__main__":
     unittest.main()

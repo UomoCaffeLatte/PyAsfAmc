@@ -3,6 +3,7 @@ import logging
 from re import split
 import re
 
+# Each type class is responsible for parsing its own elements
 class Joint:
     def __init__(self, name:str) -> None:
         self._name = name
@@ -11,6 +12,7 @@ class Joint:
         self._axisOrder = []
         self._axis = {}
         self._dof = {}
+        self._values = {}
 
     @property
     def name(self):
@@ -112,8 +114,23 @@ class Joint:
                 self._dof[key] = limitsList
         else:
             logging.error("Number of limits must match degree of freedoms, check passing in list.")
-        
+    
+    @property
+    def values(self):
+        return self._values
 
+    @values.setter
+    def values(self, values:str):
+        # check if dof is set
+        if self._dof == {}:
+            logging.error("dof needs to be set first.")
+            return
+        splitString = values.split("\t")[1:]
+        if len(splitString) == len(self._dof):
+            for string, key in zip(splitString,self._dof.keys()):
+                self._values[key] = float(string)
+        else:
+            logging.error("Number of values must match dofs, check string format.")
 class ASF:
     def __init__(self, name:str) -> None:
         self._name = name
@@ -121,9 +138,16 @@ class ASF:
         self._docs = ""
         self._joints = []
         self._hierarchy = {}
-
+        
 class AMC:
     pass
 
 class parser:
-    pass
+    def __init__(self) -> None:
+        pass
+
+    def asf(self, fileName:str):
+        pass
+
+    def amc(self, filename:str):
+        pass
