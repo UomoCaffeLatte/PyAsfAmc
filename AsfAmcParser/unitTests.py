@@ -1,3 +1,4 @@
+from visualiser import visualiser
 from abc import abstractmethod
 import unittest
 from unittest.case import TestCase
@@ -117,14 +118,14 @@ class ParserUnitTests(unittest.TestCase):
     def test_OpenAsf(self):
         wdr = os.path.dirname(os.path.realpath(__file__))
         asfamcParser = Parser(wdr)
-        lines = asfamcParser._OpenAsf("test")
+        lines = asfamcParser.OpenAsf("test")
         self.assertEqual(lines[0],":version\t1.10")
         self.assertEqual(lines[len(lines)-1],"\tend")
 
     def test_OpenAMC(self):
         wdr = os.path.dirname(os.path.realpath(__file__))
         asfamcParser = Parser(wdr)
-        lines = asfamcParser._OpenAmc("test")
+        lines = asfamcParser.OpenAmc("test")
 
 class JointUnitTests(unittest.TestCase):
     
@@ -170,5 +171,22 @@ class JointUnitTests(unittest.TestCase):
         testJoint.limits = ["(-inf\tinf)","(-inf\tinf)","(-inf\tinf)"]
         self.assertDictEqual(testJoint.limits, {"rx":[-inf,inf],"ry":[-inf,inf],"rz":[-inf,inf]})
 
+class VisualiserTests(unittest.TestCase):
+    
+    def test_CreateSkeletalVectors(self):
+        wdr = os.path.dirname(os.path.realpath(__file__))
+
+        asfamcParser = Parser(wdr)
+        
+        asfamcParser.OpenAsf("test")
+        asfamcParser.OpenAmc("test")
+
+        viz = visualiser(asf=asfamcParser.asf, amc=asfamcParser.amc)
+        viz.CreateSkeletalVectors()
+        viz.visualiseBaseSkeleton()
+
+        viz.CreateFrameVectors(220)
+        viz.visualiseFrame()
+        
 if __name__ == "__main__":
     unittest.main()

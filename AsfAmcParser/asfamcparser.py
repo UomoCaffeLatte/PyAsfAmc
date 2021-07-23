@@ -235,11 +235,11 @@ class Parser:
     def amc(self):
         return self._amc
 
-    def _OpenAsf(self, fileName:str) -> list:
+    def OpenAsf(self, fileName:str) -> list:
         # Read file
         with open(f"{self._directory}\{fileName}.asf") as asfFile:
             lines = asfFile.read().splitlines()
-            self._asf = self._ParseAsf(lines)
+            self._ParseAsf(lines)
             return lines
         
     def _ParseAsf(self, lines:list) -> ASF:
@@ -325,11 +325,11 @@ class Parser:
             index += 1
         self._asf = asf
 
-    def _OpenAmc(self, fileName:str) -> list:
+    def OpenAmc(self, fileName:str) -> list:
          # Read file
         with open(f"{self._directory}\{fileName}.amc") as amcFile:
             lines = amcFile.read().splitlines()
-            self._amc = self._ParseAmc(lines)
+            self._ParseAmc(lines)
             return lines
         
     def _ParseAmc(self, line:list) -> AMC:
