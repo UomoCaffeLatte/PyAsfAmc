@@ -206,7 +206,7 @@ class AMC:
             frame[value[0]] = [float(x) for x in value[1:]]
         self._frames.append(frame)
         self._frameCount += 1
-        self._duration = self._fps * self._frameCount
+        self._duration = self._frameCount / self._fps
 
     def __getitem__(self, frame:int) -> list:
         if frame >= 0 and frame < self._frameCount:

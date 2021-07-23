@@ -97,21 +97,25 @@ class ParserUnitTests(unittest.TestCase):
             lines = asfFile.read().splitlines()
             asfamcParser._ParseAsf(lines)
 
+        self.assertEqual(asfamcParser.asf.name,"0101")
+        self.assertEqual(len(asfamcParser.asf.getJointNames),19)
+        self.assertEqual(asfamcParser.asf.units["mass"], "kg")
+        self.assertEqual(asfamcParser.asf.units["length"], "m")
+        self.assertEqual(asfamcParser.asf.units["angle"], "deg")
+
     def test_parseAMC(self):
         wdr = os.path.dirname(os.path.realpath(__file__))
-        print(wdr)
         asfamcParser = Parser(wdr)
         
         with open(f"{wdr}\Test.amc") as amcFile:
             lines = amcFile.read().splitlines()
             asfamcParser._ParseAmc(lines)
-
-        print(asfamcParser.amc.frameCount)
-
+        
+        self.assertEqual(asfamcParser.amc.frameCount, 300)
+        self.assertEqual(asfamcParser.amc.duration, 300/30)
 
     def test_OpenAsf(self):
         wdr = os.path.dirname(os.path.realpath(__file__))
-        print(wdr)
         asfamcParser = Parser(wdr)
         lines = asfamcParser._OpenAsf("test")
         self.assertEqual(lines[0],":version\t1.10")
