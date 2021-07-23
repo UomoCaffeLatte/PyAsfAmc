@@ -1,0 +1,229 @@
+:version	1.10
+:name	0101
+:units
+	mass	1.0
+	length	1.0
+	angle	deg
+:documentation
+	fps:30
+:root
+	axis	XYZ
+	order	TX	TY	TZ	RX	RY	RZ
+	position	0.00	0.00	0.00
+	orientation	0.00	0.00	0.00
+:bonedata
+	begin
+		id	1
+		name	Head
+		direction	-18.5	116.2	-38.8
+		length	123.9
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	2
+		name	Neck
+		direction	-1.6	89.5	-15.3
+		length	90.8
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	3
+		name	LeftCollar
+		direction	-5.0	276.0	-47.2
+		length	280.1
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	4
+		name	Torso
+		direction	4.0	199.4	8.5
+		length	199.7
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	5
+		name	LeftShoulder
+		direction	170.7	-14.1	-44.7
+		length	177.0
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	6
+		name	RightShoulder
+		direction	-174.2	6.3	52.4
+		length	182.0
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	7
+		name	LeftElbow
+		direction	55.3	-271.7	26.6
+		length	278.5
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	8
+		name	RightElbow
+		direction	-37.0	-268.0	66.2
+		length	278.5
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	9
+		name	LeftWrist
+		direction	69.1	-260.5	-128.7
+		length	298.7
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	10
+		name	RightWrist
+		direction	-79.9	-277.4	-76.9
+		length	298.7
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	11
+		name	LeftHand
+		direction	13.8	-52.1	-25.7
+		length	59.7
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	12
+		name	RightHand
+		direction	-16.0	-55.5	-15.4
+		length	59.7
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	13
+		name	LeftHip
+		direction	117.3	-70.1	12.8
+		length	137.3
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	14
+		name	RightHip
+		direction	-108.5	-76.7	41.0
+		length	139.0
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	15
+		name	LeftKnee
+		direction	-0.2	-428.3	-95.5
+		length	438.9
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	16
+		name	RightKnee
+		direction	16.9	-434.8	-56.9
+		length	438.9
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	17
+		name	LeftAnkle
+		direction	51.1	-389.3	75.6
+		length	399.8
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+	begin
+		id	18
+		name	RightAnkle
+		direction	-36.9	-388.8	85.6
+		length	399.8
+		axis	0.0	0.0	0.0	XYZ
+		dof	rx	ry	rz
+		limits	(-inf	inf)
+			(-inf	inf)
+			(-inf	inf)
+	end
+:hierarchy
+	begin
+		Neck	Head
+		LeftCollar	Neck	LeftShoulder	RightShoulder
+		Torso	LeftCollar
+		root	Torso	LeftHip	RightHip
+		LeftShoulder	LeftElbow
+		RightShoulder	RightElbow
+		LeftElbow	LeftWrist
+		RightElbow	RightWrist
+		LeftWrist	LeftHand
+		RightWrist	RightHand
+		LeftHip	LeftKnee
+		RightHip	RightKnee
+		LeftKnee	LeftAnkle
+		RightKnee	RightAnkle
+	end

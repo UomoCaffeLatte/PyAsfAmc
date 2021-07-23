@@ -4,6 +4,7 @@ from unittest.case import TestCase
 from unittest.main import main
 from asfamcparser import Joint, AMC, ASF, Parser
 from math import inf
+import os
 
 class ASFUnitTests(unittest.TestCase):
     
@@ -86,7 +87,31 @@ class AMCUnitTests(unittest.TestCase):
         self.assertEqual(testAMC._SplitJointLine(teststring), [["Test1","0.3","5.5","9.9"],["Test2","0.7","9.0","10.0"]])
 
 class ParserUnitTests(unittest.TestCase):
-    pass
+    
+    def test_parseASF(self):
+        wdr = os.path.dirname(os.path.realpath(__file__))
+        print(wdr)
+        asfamcParser = Parser(wdr)
+        
+        with open(f"{wdr}\Test.asf") as asfFile:
+            lines = asfFile.read().splitlines()
+            asfamcParser._ParseAsf(lines)
+
+    def test_parseAMC(self):
+        pass
+
+    def test_OpenAsf(self):
+        wdr = os.path.dirname(os.path.realpath(__file__))
+        print(wdr)
+        asfamcParser = Parser(wdr)
+        lines = asfamcParser._OpenAsf("test")
+        self.assertEqual(lines[0],":version\t1.10")
+        self.assertEqual(lines[len(lines)-1],"\tend")
+
+    def test_OpenAMC(self):
+        wdr = os.path.dirname(os.path.realpath(__file__))
+        asfamcParser = Parser(wdr)
+        lines = asfamcParser._OpenAmc("test")
 
 class JointUnitTests(unittest.TestCase):
     
@@ -116,14 +141,14 @@ class JointUnitTests(unittest.TestCase):
 
     def test_axisSetter(self):
         testJoint = Joint("Test")
-        testString = "\t5.5\t5.6\t6.8"
+        testString = ["5.5","5.6","6.8"]
         testJoint._axisOrder = ["X","Y","Z"]
         testJoint.axis = testString
         self.assertDictEqual(testJoint.axis, {"X":5.5,"Y":5.6,"Z":6.8})
 
     def test_dofSetter(self):
         testJoint = Joint("Test")
-        testJoint.dof = "\trx\try\trz"
+        testJoint.dof = ["rx","ry","rz"]
         self.assertEqual(testJoint.dof, ["rx","ry","rz"])
 
     def test_limitsSetter(self):

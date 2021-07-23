@@ -1,6 +1,6 @@
 
 import logging
-from re import split
+from re import L, split
 import re
 from sys import float_repr_style
 
@@ -58,11 +58,8 @@ class Joint:
         # split characters
         chars = list(value)
         # check three axis given
-        if len(chars) == 3:
-            self._axisOrder = chars
-        else:
-            logging.error(f"axisOrder must contain only three axis in the format [Axis1][Axis2][Axis3], instead {len(chars)} values were provided in string format.")
-    
+        self._axisOrder = chars
+
     @property
     def axis(self):
         return self._axis
@@ -73,13 +70,12 @@ class Joint:
         if self._axisOrder == []:
             logging.error("Axis order must be set first to enter axis values.")
             return
-        splitString = value.split("\t")[1:]
         # Check there are 3 split strings
-        if len(splitString) == 3:
-            for axis, value in zip(self._axisOrder, splitString):
+        if len(value) == len(self._axisOrder):
+            for axis, value in zip(self._axisOrder, value):
                 self._axis[axis] = float(value)
         else:
-            logging.error(f"axis values must be of format \t\tvalue\t\tvalue\t\tvalue, instead {len(splitString)} values were provided in string format.")
+            logging.error(f"axis values must be of format \t\tvalue\t\tvalue\t\tvalue...")
 
     @property
     def dof(self):
@@ -87,8 +83,7 @@ class Joint:
     
     @dof.setter
     def dof(self, value:str):
-        stringSplit = value.split("\t")[1:]
-        for item in stringSplit:
+        for item in value:
             self._dof[item] = None
     
     @property
@@ -219,7 +214,7 @@ class AMC:
         else:
             logging.error("frame index out of bounds.")
     
-    def _SplitJointLine(self, values:str):
+    def _SplitJointLine(self, values:str) -> list:
         # check if dof is set
         listValues = []
         for string in values:
@@ -231,16 +226,113 @@ class Parser:
         self._directory = directory
         self._asf = None
         self._amc = None
-        self._joints = []
 
-    def asf(self, fileName:str):
+    @property
+    def asf(self):
+        return self._asf
+    
+    @property
+    def amc(self):
+        return self._amc
+
+    def _OpenAsf(self, fileName:str) -> list:
         # Read file
-        with open(f"{self._directory}{fileName}") as asfFile:
+        with open(f"{self._directory}\{fileName}.asf") as asfFile:
             lines = asfFile.read().splitlines()
+            self._asf = self._ParseAsf(lines)
+            return lines
         
+    def _ParseAsf(self, lines:list) -> ASF:
+        index = 0
+        assert lines[index].split("\t")[1] == "1.10"
+        index += 1
+        assert lines[index].split("\t")[0] == ":name"
+        asf = ASF(lines[index].split("\t")[1])
+        index += 1
+        assert lines[index] == ":units"
+        index += 1
+        assert lines[index].split("\t")[1] == "mass"
+        asf.AddMassUnit(lines[index].split("\t")[2])
+        index += 1
+        assert lines[index].split("\t")[1] == "length"
+        asf.AddLengthUnit(lines[index].split("\t")[2])
+        index += 1
+        assert lines[index].split("\t")[1] == "angle"
+        asf.AddAngleUnit(lines[index].split("\t")[2])
+        index +=1
+        assert lines[index] == ":documentation"
+        index += 1
+        while lines[index] != ":root":
+            asf.docs += lines[index]
+            index += 1
+        assert lines[index] == ":root"
+        rootJoint = Joint("root")
+        index += 1
+        assert lines[index].split("\t")[1] == "axis"
+        index += 1
+        assert lines[index].split("\t")[1] == "order"
+        rootJoint.axisOrder = lines[index].split("\t")[2:]
+        rootJoint.dof = lines[index].split("\t")[2:]
+        index += 1
+        assert lines[index].split("\t")[1] == "position"
+        axis = lines[index].split("\t")[2:]
+        index += 1
+        assert lines[index].split("\t")[1] == "orientation"
+        rootJoint.axis = axis + lines[index].split("\t")[2:]
+        asf.AddJoint(rootJoint)
+        index += 1
+        assert lines[index] == ":bonedata"
+        index += 1
+        while lines[index] != ":hierarchy":
+            joint = None
+            while lines[index].split("\t")[1] != "end":
+                assert lines[index].split("\t")[1] == "begin"
+                index += 2
+                assert lines[index].split("\t")[2] == "name"
+                joint = Joint(lines[index].split("\t")[3])
+                index += 1
+                assert lines[index].split("\t")[2] == "direction"
+                joint.direction = "\t"+lines[index].split("\t",3)[3]
+                index += 1
+                assert lines[index].split("\t")[2] == "length"
+                joint.length = lines[index].split("\t")[3]
+                index += 1
+                assert lines[index].split("\t")[2] == "axis"
+                joint.axisOrder = lines[index].split("\t")[6]
+                joint.axis = lines[index].split("\t")[3:6]
+                index += 1
+                assert lines[index].split("\t")[2] == "dof"
+                joint.dof = lines[index].split("\t")[3:]
+                index += 1
+                assert lines[index].split("\t",3)[2] == "limits"
+                rawLimits = []
+                rawLimits.append(lines[index].split("\t",3)[3])
+                index += 1
+                for degree in joint.dof[1:]:
+                    rawLimits.append(lines[index].split("\t",3)[3])
+                    index += 1
+                joint.limits = rawLimits
+            index += 1
+            asf.AddJoint(joint)
+        # Hierarchy
+        assert  lines[index] == ":hierarchy"
+        index += 1
+        assert lines[index].split("\t")[1] == "begin"
+        index += 1
+        while lines[index].split("\t")[1] != "end":
+            splitData = lines[index].split("\t",3)
+            asf.AddJointHierarchy(splitData[2], "\t"+splitData[3])
+            index += 1
+        self._asf = asf
 
-    def amc(self, fileName:str):
+            
+
+    def _OpenAmc(self, fileName:str) -> list:
          # Read file
-        with open(f"{self._directory}{fileName}") as amcFile:
+        with open(f"{self._directory}\{fileName}.amc") as amcFile:
             lines = amcFile.read().splitlines()
+            self._amc = self._ParseAmc(lines)
+            return lines
+        
+    def _ParseAmc(self, line:list) -> AMC:
         pass
