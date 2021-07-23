@@ -98,7 +98,16 @@ class ParserUnitTests(unittest.TestCase):
             asfamcParser._ParseAsf(lines)
 
     def test_parseAMC(self):
-        pass
+        wdr = os.path.dirname(os.path.realpath(__file__))
+        print(wdr)
+        asfamcParser = Parser(wdr)
+        
+        with open(f"{wdr}\Test.amc") as amcFile:
+            lines = amcFile.read().splitlines()
+            asfamcParser._ParseAmc(lines)
+
+        print(asfamcParser.amc.frameCount)
+
 
     def test_OpenAsf(self):
         wdr = os.path.dirname(os.path.realpath(__file__))

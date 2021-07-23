@@ -325,8 +325,6 @@ class Parser:
             index += 1
         self._asf = asf
 
-            
-
     def _OpenAmc(self, fileName:str) -> list:
          # Read file
         with open(f"{self._directory}\{fileName}.amc") as amcFile:
@@ -335,4 +333,22 @@ class Parser:
             return lines
         
     def _ParseAmc(self, line:list) -> AMC:
-        pass
+        amc = AMC()
+        index = 0
+        assert line[index] == ":FULLY-SPECIFIED"
+        index += 1
+        assert line[index] == ":DEGREES"
+        frameCounter = 1
+        index += 1
+        while index != len(line):
+            frame = []
+            assert line[index] == f"{frameCounter}"
+            index += 1
+            while line[index] != f"{frameCounter+1}":
+                frame.append(line[index])
+                index +=1
+                if index == len(line): break
+            amc.AddFrame(frame)
+            frameCounter += 1
+        self._amc = amc
+
