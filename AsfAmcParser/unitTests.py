@@ -178,15 +178,13 @@ class VisualiserTests(unittest.TestCase):
 
         asfamcParser = Parser(wdr)
         
-        asfamcParser.OpenAsf("test")
-        asfamcParser.OpenAmc("test")
+        asfamcParser.OpenAsf("TestSkeleton")
+        asfamcParser.OpenAmc("TestMotion")
 
         viz = visualiser(asf=asfamcParser.asf, amc=asfamcParser.amc)
-        viz.CreateSkeletalVectors()
         viz.visualiseBaseSkeleton()
-
-        viz.CreateFrameVectors(220)
-        viz.visualiseFrame()
+        print(asfamcParser.amc.frameCount)
+        viz.visualiseFrame(10)
         
 if __name__ == "__main__":
     unittest.main()

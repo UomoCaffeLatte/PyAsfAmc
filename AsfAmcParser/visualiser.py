@@ -30,7 +30,8 @@ class visualiser:
             for childJoint in children:
                 self.CreateSkeletalVectors(joint=childJoint, parentJoint=joint)
 
-    def CreateFrameVectors(self, frame:int=0):
+    def _CreateFrameVectors(self, frame:int=0):
+        # create joint vector based on joint value at current frame
         frameValues = self._amc.frames[frame]
 
         if len(self._baseVectors) == 0:
@@ -54,9 +55,9 @@ class visualiser:
         # plot
         self._viz(self._baseVectors)
 
-    def visualiseFrame(self):
-        if len(self._vectors) == 0:
-            logging.error("No frame data read. Run CreateFrameVectors first.")
+    def visualiseFrame(self, frame:int=0):
+        # create frame vectors
+        self._CreateFrameVectors(frame=frame)
         # plot
         self._viz(self._vectors)
 
