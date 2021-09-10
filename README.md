@@ -1,7 +1,7 @@
 ﻿# PyAsfAmc
 Author: Nikhil Reji
 
-In house asf/amc parser following version 1.1.
+generic asf/amc parser following standard version 1.1.
 
 ## features:
 - ASF parser with data structure.

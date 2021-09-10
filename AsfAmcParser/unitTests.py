@@ -1,8 +1,5 @@
-from visualiser import visualiser
-from abc import abstractmethod
+
 import unittest
-from unittest.case import TestCase
-from unittest.main import main
 from asfamcparser import Joint, AMC, ASF, Parser
 from math import inf
 import os
@@ -171,21 +168,6 @@ class JointUnitTests(unittest.TestCase):
         testJoint.limits = ["(-inf\tinf)","(-inf\tinf)","(-inf\tinf)"]
         self.assertDictEqual(testJoint.limits, {"rx":[-inf,inf],"ry":[-inf,inf],"rz":[-inf,inf]})
 
-class VisualiserTests(unittest.TestCase):
-    
-    def test_CreateSkeletalVectors(self):
-        wdr = os.path.dirname(os.path.realpath(__file__))
-
-        asfamcParser = Parser(wdr)
-        
-        asfamcParser.OpenAsf("TestSkeleton")
-        asfamcParser.OpenAmc("TestMotion")
-
-        viz = visualiser(asf=asfamcParser.asf, amc=asfamcParser.amc)
-        viz.visualiseBaseSkeleton()
-        print(asfamcParser.amc.frameCount)
-        viz.visualiseFrame(10)
-        viz.play()
         
 if __name__ == "__main__":
     unittest.main()
