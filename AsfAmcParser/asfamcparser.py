@@ -1,5 +1,5 @@
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from collections import namedtuple
 from os import linesep
 from typing import Tuple, NamedTuple
@@ -8,11 +8,12 @@ from typing import Tuple, NamedTuple
 @dataclass(frozen=True)
 class Joint:
     # dataclass that represents a single joint
-    name: str
-    dof: NamedTuple
-    axis: NamedTuple
-    direction: NamedTuple
-    length: float
+    name: str = ""
+    dof: NamedTuple = ()
+    direction: Tuple = () 
+    length: float = 0
+    axis: NamedTuple = ()
+    order: Tuple = ()
 
 @dataclass(frozen=True)
 class ASF:
@@ -20,11 +21,14 @@ class ASF:
     name: str
     units: NamedTuple
     doc: str
-    joints: dict
+    joints: Tuple[Joint, ...]
     hierarchy: dict
 
     def __getitem__(self, jointName:str) -> Joint:
-        return self.joints[jointName]
+        for joint in self.joints:
+            if joint.name == jointName:
+                return joint
+        raise ValueError(f"Joint name {jointName} does not exist.")
 
 @dataclass(frozen=True)
 class AMC:
@@ -33,7 +37,7 @@ class AMC:
     fps: int
     duration: int
     frames: Tuple[Tuple, ...]
-
+    
     def __getitem__(self, frame:int) -> Tuple:
         if frame < self.count:
             return self.frames[frame]
@@ -56,15 +60,16 @@ class Reader:
         return line, i
 
 class ParseASF(Reader):
-    def __init__(self, filePath:str) -> ASF:
+    def __init__(self, filePath:str) -> None:
         super().__init__()
         # check file path exists and read all lines in file
         lines = self.ReadFile(filePath)
-        # parse into asf dataclass
-        # finish and return
-        return None
+        # parse into asf dataclass and return
+        self.asf = self._Parse(lines)
     
-    def _RaiseSyntaxError(self, index:int): raise SyntaxError(f"Asf format incorrect at line {index}.")
+    def _RaiseSyntaxError(self, index:int):
+        errorStr = f"Asf format incorrect at line {index}."
+        raise SyntaxError(errorStr)
 
     def _Parse(self, lines:Tuple[str, ...]) -> ASF:
         unitsT = namedtuple('units',['mass','length','angle'])
@@ -74,14 +79,16 @@ class ParseASF(Reader):
         if not line[1] == "1.10": self._RaiseSyntaxError(i)
         line, i = read(i)
         if not line[0] == ":name": self._RaiseSyntaxError(i)
-        name = line[1]
+        asfName = line[1]
         line, i = read(i)
         if not line[0] == ":units": self._RaiseSyntaxError(i)
         line, i = read(i)
         if not line[0] == "mass": self._RaiseSyntaxError(i)
         mass = line[1]
+        line, i = read(i)
         if not line[0] == "length": self._RaiseSyntaxError(i)
         length = line[1]
+        line, i = read(i)
         if not line[0] == "angle": self._RaiseSyntaxError(i)
         angle = line[1]
         units = unitsT(mass, length, angle)
@@ -90,11 +97,67 @@ class ParseASF(Reader):
         doc = ""
         while line[0] != ":root":
             line, i = read(i)
-            doc += line + ""
-        
-
-
-
+            doc += " ".join(line[:]) + " "
+        line, i = read(i)
+        if not line[0] == "axis": self._RaiseSyntaxError(i)
+        axis = list(line[1])
+        line, i = read(i)
+        if not line[0] == "order": self._RaiseSyntaxError(i)
+        order = []
+        for j in range(1,len(line)):
+            order.append(line[j])
+        line, i = read(i)
+        if not line[0] == "position": self._RaiseSyntaxError(i)
+        position = [ float(val) for val in line[1:]]
+        line, i = read(i)
+        if not line[0] == "orientation": self._RaiseSyntaxError(i)
+        orientation = [ float(val) for val in line[1:]]
+        axisT = namedtuple("axis",order)
+        axis = axisT(*position,*orientation)
+        rootJoint = Joint("root", dof=tuple(axis), order=tuple(axis), axis=axis)
+        line, i = read(i)
+        if not line[0] == ":bonedata": self._RaiseSyntaxError(i)
+        joints = [rootJoint]
+        line, i = read(i)
+        while line[0] != ":hierarchy":
+            if not line[0] == "begin": self._RaiseSyntaxError(i)
+            line, i = read(i)
+            if not line[0] == "id": self._RaiseSyntaxError(i)
+            line, i = read(i)
+            if not line[0] == "name": self._RaiseSyntaxError(i)
+            name = line[1]
+            line, i = read(i)
+            if not line[0] == "direction": self._RaiseSyntaxError(i)
+            direction = [float(val) for val in line[1:]]
+            line, i = read(i)
+            if not line[0] == "length": self._RaiseSyntaxError(i)
+            length = float(line[1])
+            line, i = read(i)
+            if not line[0] == "axis": self._RaiseSyntaxError(i)
+            order = list(line[len(line)-1])
+            axisT = namedtuple("axis",order)
+            axis = axisT(*[float(val) for val in line[1:len(line)-1]])
+            line, i = read(i)
+            if not line[0] == "dof": self._RaiseSyntaxError(i)
+            dofT = namedtuple("dof",line[1:])
+            line, i = read(i)
+            if not line[0] == "limits": self._RaiseSyntaxError(i)
+            limits = [(float(line[1].strip("(")), float(line[2].strip(")")))]
+            line, i = read(i)
+            while line[0] != "end":
+                limits.append((float(line[0].strip("(")), float(line[1].strip(")"))))
+                line, i = read(i)
+            dof = dofT(*limits)
+            joints.append( Joint(name, dof, direction, length, axis, order))
+            line, i = read(i)
+        line, i = read(i)
+        if not line[0] == "begin": self._RaiseSyntaxError(i)
+        hierarchy = {}
+        while line[0] != "end":
+            line, i = read(i)
+            hierarchy[line[0]] = tuple(line[1:])
+        return ASF(asfName, units, doc, tuple(joints), hierarchy)
+ 
 class ParseAMC(Reader):
     def __init__(self, filePath:str) -> AMC:
         super().__init__()
@@ -106,3 +169,7 @@ class ParseAMC(Reader):
     
     def _Parse(self, lines:Tuple[str, ...]) -> AMC:
         pass
+
+if __name__ == "__main__":
+    asf = ParseASF("./AsfAmcParser/test.asf")
+    print(asf.asf["LeftElbow"].axis)
