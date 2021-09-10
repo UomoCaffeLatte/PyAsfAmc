@@ -185,6 +185,7 @@ class VisualiserTests(unittest.TestCase):
         viz.visualiseBaseSkeleton()
         print(asfamcParser.amc.frameCount)
         viz.visualiseFrame(10)
+        viz.play()
         
 if __name__ == "__main__":
     unittest.main()
