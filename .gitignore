@@ -1,7 +1,7 @@
 
 # ASF/AMC
-.amc 
-.asf
+*.amc 
+*.asf
 
 # PYTHON
 # Byte-compiled / optimized / DLL files
