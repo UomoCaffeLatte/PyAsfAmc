@@ -7,7 +7,6 @@ In house asf/amc parser following version 1.1.
 - ASF parser with data structure.
 - AMC parser with data structure.
 - Joint data structure.
-- Matlab based individual frame visualisation.
 
 ## How to use:
 
@@ -67,21 +66,4 @@ amc data structure also contains the __getitem__ dunder method. This allows for 
 
 ```python
 frameTenValues = asfamcParser.amc[10]
-```
-#### Visualise single frame
-To Visualise a single frame, first both the asf and amc files must be parsed as shown in the *Open and parse files* section.
-
-```python
-    from visualiser import visualiser
-
-    # parsed amc and asf file (example)
-    testAmc
-    testAsf
-
-    # initalise
-    viz = visualiser(asf=testAsf, amc=testAmc)
-    # visualise base skeleton, which is extracted from the asf file.
-    viz.visualiseBaseSkeleton()
-    # visualise frame with index 10.
-    viz.visualiseFrame(10)
 ```
