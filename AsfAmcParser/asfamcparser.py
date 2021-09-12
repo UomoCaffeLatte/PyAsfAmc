@@ -24,6 +24,9 @@ class ASF:
     joints: Tuple[Joint, ...]
     hierarchy: dict
 
+    def __iter__(self):
+        return list(self.joints).__iter__()
+
     def __getitem__(self, jointName:str) -> Joint:
         for joint in self.joints:
             if joint.name == jointName:
@@ -34,10 +37,11 @@ class ASF:
 class AMC:
     # dataclass that represents a parsed amc file
     count: int
-    fps: int
-    duration: int
-    frames: Tuple[Tuple, ...]
+    frames: Tuple[dict, ...]
     
+    def __iter__(self):
+        return list(self.frames).__iter__()
+
     def __getitem__(self, frame:int) -> Tuple:
         if frame < self.count:
             return self.frames[frame]
@@ -59,17 +63,17 @@ class Reader:
         i += 1
         return line, i
 
+    def _RaiseSyntaxError(self, index:int):
+        errorStr = f"Asf format incorrect at line {index}."
+        raise SyntaxError(errorStr)
+
 class ParseASF(Reader):
     def __init__(self, filePath:str) -> None:
         super().__init__()
         # check file path exists and read all lines in file
         lines = self.ReadFile(filePath)
-        # parse into asf dataclass and return
+        # parse into asf dataclass
         self.asf = self._Parse(lines)
-    
-    def _RaiseSyntaxError(self, index:int):
-        errorStr = f"Asf format incorrect at line {index}."
-        raise SyntaxError(errorStr)
 
     def _Parse(self, lines:Tuple[str, ...]) -> ASF:
         unitsT = namedtuple('units',['mass','length','angle'])
@@ -164,12 +168,29 @@ class ParseAMC(Reader):
         # check file path exists and read all lines in file
         lines = self.ReadFile(filePath)
         # parse into amc dataclass
-        # finish and return
-        return None
+        self.amc = self._Parse(lines)
     
     def _Parse(self, lines:Tuple[str, ...]) -> AMC:
-        pass
+        read = lambda index: self._ReadLine(lines, index)
+        line, i = read(0)
+        if not line[0] == ":FULLY-SPECIFIED": self._RaiseSyntaxError(i)
+        line, i = read(i)
+        if not line[0] == ":DEGREES": self._RaiseSyntaxError(i)
+        frames = []
+        line, i = read(i)
+        while i != len(lines):
+            index = int(line[0])
+            if not index >= 0: self._RaiseSyntaxError(i)
+            line, i = read(i)
+            frame = {}
+            while line != None and line[0] != f"{index+1}":
+                frame[line[0]] = [float(val) for val in line[1:]]
+                line, i = read(i)
+            frames.append(frame)
+        return AMC(len(frames), tuple(frames))
+        
 
 if __name__ == "__main__":
     asf = ParseASF("./AsfAmcParser/test.asf")
-    print(asf.asf["LeftElbow"].axis)
+    amc = ParseAMC("./AsfAmcParser/testRaw.amc")
+    print(amc.amc[0]["Waist"])

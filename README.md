@@ -32,7 +32,7 @@ NamedTuple values can be accessed either through their index or their names as f
 
 ### ASF
 Immutable class.
-```
+```Python
     ASF
         - name : str
         - units : NamedTuple e.g ("mass"="kg", "length"="mm", "angle"="Deg")
@@ -44,10 +44,31 @@ Individual joints can be retrieved using the dict key method as follows:
 ``` Python
     LElbowJoint = ASF["LeftElbow"]
 ```
+Also, all joints can be accessed through for iterations:
+```Python
+    for joint in ASF:
+        print( joint.name )
+```
 ### AMC
+Immutable class
+```Python
+    AMC
+        - count:int (number of frames)
+        - frames: Tuple[dict,...] 
 ```
+Individual frames can be retrieved using the dict key method as follows:
+``` Python
+    frameTen = AMC[10]
 ```
-
+Individual frames and specific joint data can be retrieved using the dict key method as follows:
+``` Python
+    frameTenHead = AMC[10]["Head"]
+```
+Also, all frames can be accessed through for iterations:
+```Python
+    for frame in AMC:
+        print( frame.count )
+```
 ## Examples:
 
 ### ParseASF
@@ -56,7 +77,13 @@ The full path to the .asf file is required to parse.
     parsedAsf = ParseASF("./recordings/test.asf")
     asf = parsedASF.asf
 ```
-The retrieve asf file can be navigated using its properties described in the data structure section.
+The retrieve asf file can be navigated using its properties described in the data structudre section.
 
 ### ParseAMC
+The full path to the .amc file is required to parse.
+``` Python
+    parsedAmc = ParseAmc("./recordings/test.amc")
+    amc = parsedAMC.amc
+```
+The retrieved amc file can be navigated using its properties described in the data structure section.
 
