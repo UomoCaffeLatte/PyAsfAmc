@@ -9,7 +9,7 @@ README = (HERE / "README.md").read_text()
 
 setup(
     name="asfamc-parser",
-    version="0.0.1",
+    version="0.0.2",
     description="generic asf/amc parser following standard version 1.1.",
     long_description_content_type="text/markdown",
     long_description=README,
@@ -22,7 +22,7 @@ setup(
         "Natural Language :: English",
         "Topic :: Software Development :: Libraries",
     ],
-    url="https://github.com/UomoCaffeLatte/AMCParser",
+    url="https://github.com/UomoCaffeLatte/PyAsfAmc",
     author="Nikhil Reji",
     author_email="Nikhil.Reji@live.co.uk",
 )
