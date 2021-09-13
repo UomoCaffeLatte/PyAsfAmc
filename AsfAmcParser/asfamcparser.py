@@ -1,7 +1,6 @@
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from collections import namedtuple
-from os import linesep
 from typing import Tuple, NamedTuple
 
 
