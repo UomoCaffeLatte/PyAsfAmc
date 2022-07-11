@@ -3,6 +3,11 @@ Author: Nikhil Reji
 
 generic asf/amc parser following standard version 1.1.
 
+## Install
+```
+    pip install asfamc-parser
+```
+
 ## features:
 - ASF parser
 - AMC parser
